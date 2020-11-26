@@ -1,7 +1,13 @@
-import Valx.W_utility.file as ufile
-from Valx.W_utility.log import ext_print
+try:
+    from .Valx.W_utility.file import *
+    from .Valx.W_utility.log import ext_print
+    from .Valx import Valx_core
+except ImportError:
+    from Valx.W_utility.file import *
+    from Valx.W_utility.log import ext_print
+    from Valx import Valx_core
+    
 import os,sys,re
-from Valx import Valx_core
 from tqdm import tqdm_notebook
 import pandas as pd
 
@@ -25,7 +31,7 @@ class valex_ie_parser:
         
         # read feature list - domain knowledge
         if self.ffea is None or self.ffea =="": return False
-        fea_dict_dk = ufile.read_csv_as_dict_with_multiple_items (self.ffea)
+        fea_dict_dk = read_csv_as_dict_with_multiple_items (self.ffea)
         if fea_dict_dk is None or len(fea_dict_dk) <= 0:
             print(ext_print ('no feature data available --- interrupting'))
             return False
@@ -44,7 +50,7 @@ class valex_ie_parser:
 
         # read feature list - UMLS (can be replaced by full UMLS)
         if self.ffea2 is None or self.ffea2 =="": return False
-        fea_dict_umls = ufile.read_csv_as_dict (self.ffea2)
+        fea_dict_umls = read_csv_as_dict (self.ffea2)
         if fea_dict_umls is None or len(fea_dict_umls) <= 0:
             print(ext_print ('no feature data available --- interrupting'))
             return False
