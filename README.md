@@ -1,3 +1,8 @@
+## Updates
+1. Upgraded to python 3
+2. Bug fixes
+3. Included example jupyter notebook for easy implementation
+
 ## Valx
 a Python tool to extract and structure numeric lab test comparison statements from text
 

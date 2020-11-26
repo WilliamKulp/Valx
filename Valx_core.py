@@ -7,14 +7,13 @@ import re, math, csv
 import W_utility.file as ufile
 from NLP import sentence
 from NLP import sentence_keywords
-import pandas as pd
 
 #--------------------------Define representative logics and their candidate representations 
 
 greater, greater_equal, greater_equal2, lower, lower_equal, lower_equal2, equal, between, selects, connect, features, temporal, temporal_con, error1, error2, symbols, numbers, unit_special, unit_ori, unit_ori_s, unit_exp, negation = "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
 def init_features ():
-    feature_set = ufile.read_csv_as_dict ('data\\numeric_features.csv', 0, 1, True)
+    feature_set = ufile.read_csv_as_dict ('data/numeric_features.csv', 0, 1, True)
     global greater, greater_equal, greater_equal2, lower, lower_equal, lower_equal2, equal, between, selects, connect, features, temporal, temporal_con, error1, error2, symbols, numbers, unit_special, unit_ori, unit_ori_s, unit_exp, negation
     greater, greater_equal, greater_equal2, lower, lower_equal, lower_equal2, equal, between, selects, connect, features, temporal, temporal_con, error1, error2, symbols, numbers, unit_special, unit_ori, unit_ori_s, unit_exp, negation = \
     feature_set["greater"], feature_set["greater_equal"], feature_set["greater_equal2"], feature_set["lower"], feature_set["lower_equal"], feature_set["lower_equal2"], feature_set["equal"], feature_set["between"], feature_set["selects"], feature_set["connect"], feature_set["features"], feature_set["temporal"], feature_set["temporal_con"], feature_set["error1"], feature_set["error2"], feature_set["symbols"], feature_set["numbers"], feature_set["unit_special"], feature_set["unit_ori"], feature_set["unit_ori_s"], feature_set["unit_exp"], feature_set["negation"]
@@ -24,8 +23,7 @@ def init_features ():
 
 def preprocessing (text):
     # handle special characters
-    text = text.encode('ascii', 'ignore')
-    text = text.decode('ascii', 'ignore')
+    # text = text.decode('ascii', 'ignore')
 
     text = text.strip().replace('\n\n', '#')
     text = text.replace ('\n', '')
@@ -104,7 +102,7 @@ def extract_candidates_name (sections_num, candidates_num, name_list):
     sections = []
     candidates = []
     names = name_list.split('|')
-    for i in range(0,len(candidates_num)):            
+    for i in xrange(len(candidates_num)):            
         for name in names:
            if name in candidates_num[i]:
                 sections.append(sections_num[i])
@@ -117,17 +115,17 @@ def extract_candidates_name (sections_num, candidates_num, name_list):
 #====identify expressions and formalize them into labels "<VML(tag) L(logic, e.g., greater_equal)=X U(unit)=X>value</VML>"
 def formalize_expressions (candidate):
     text = candidate
-    # csvfile = open('data/rules.csv', 'r')
-    # reader = csv.reader(csvfile)
+    csvfile = open('data/rules.csv', 'r')
+    reader = csv.reader(csvfile)
     now_pattern = "preprocessing"
-    csvfile = pd.read_csv('data/rules.csv')
-    for i,row in csvfile.iterrows():
-        source_pattern = row['source_pattern']
-        target_pattern = row['target_pattern']
-        pattern_function = row['pattern_function']
+
+    for i,pattern in enumerate(reader):
+        source_pattern = pattern[0]
+        target_pattern = pattern[1]
+        pattern_function = pattern[2]
 
         if(pattern_function == "process_numerical_values" and pattern_function != now_pattern):
-            matchs = re.findall('<Unit>([^!=]+)</Unit>', text)
+            matchs = re.findall('<Unit>([^<>]+)</Unit>', text)
             for match in matchs: text = text.replace(match, match.replace(' / ', '/').replace(' - ','-'))
 
         if(pattern_function == "process_special_logics" and pattern_function != now_pattern):
@@ -135,19 +133,21 @@ def formalize_expressions (candidate):
             global selects
             aselect = selects.split('|')
             for selec in aselect:
-                selec = selec.replace('X', '<VML Unit([^!=]+)>([^!=]+)</VML>')
-                text = re.sub(selec, r'<VML Unit\1>\2</VML>', text) #
+                selec = selec.replace('X', '<VML Unit([^<>]+)>([^<>]+)</VML>')
+                if len(selec) > 0 : 
+                    text = re.sub(selec, r'<VML Unit\1>\2</VML>', text) 
 
             #  process 'between' expressions
             global between
             betweens = between.split('|')
             for betw in betweens:
-                betw = betw.replace('X', '<VML Unit([^!=]+)>([^!=]+)</VML>')
-                text = re.sub(betw, r'<VML Logic=greater_equal Unit\1>\2</VML> - <VML Logic=lower_equal Unit\3>\4</VML>', text) #
+                betw = betw.replace('X', '<VML Unit([^<>]+)>([^<>]+)</VML>')
+                if len(betw) > 0 :
+                    text = re.sub(betw, r'<VML Logic=greater_equal Unit\1>\2</VML> - <VML Logic=lower_equal Unit\3>\4</VML>', text) #
         text = re.sub(source_pattern, target_pattern, text)
         now_pattern = pattern_function
 
-    # csvfile.close()
+    csvfile.close()
     return text
 
 
@@ -164,7 +164,7 @@ def identify_variable (exp_text, fea_dict_dk, fea_dict_umls):
     match = False
     for cantext in can_texts:
         if '<VL Label' in cantext[1]: 
-            ngrams = re.findall('<VL Label=([^!=]+) Source', cantext[1])
+            ngrams = re.findall('<VL Label=([^<>]+) Source', cantext[1])
             for ngram in ngrams:# judge if they are potential variables
                 if ngram in fea_dict_dk:
                     exp_text = re.sub(r'<VL Label='+ngram+' Source=', r"<VL Label=%s Source=" % fea_dict_dk[ngram], exp_text)
@@ -189,13 +189,13 @@ def identify_variable (exp_text, fea_dict_dk, fea_dict_umls):
                     match = True
                     break
 
-    exp_text = re.sub(r'<VL ([^>]+)<VL Label=[^!=]+>([^!=]+)</VL>',r'<VL \1\2', exp_text)
-    exp_text = re.sub(r'(?<!(\w|<|>|=))('+add_mentions_front+') <VL Label=([^!=]+) Source=([^!=]+)>([^!=]+)</VL>', r"<VL Label=\2 \3 Source=\4>\2 \5</VL>", exp_text)
+    exp_text = re.sub(r'<VL ([^>]+)<VL Label=[^<>]+>([^<>]+)</VL>',r'<VL \1\2', exp_text)
+    exp_text = re.sub(r'(?<!(\w|<|>|=))('+add_mentions_front+') <VL Label=([^<>]+) Source=([^<>]+)>([^<>]+)</VL>', r"<VL Label=\2 \3 Source=\4>\2 \5</VL>", exp_text)
     exp_text = re.sub(r'</VL>'+' ('+add_mentions_back+r')(?!(\w|<|>))', r" \1</VL>", exp_text)
 
     if len(can_texts)>0 and not match and first_ngram.strip() != '': #guess variable
         exp_text = exp_text.replace(first_ngram, "<VL Label=%s Source=ngram>%s</VL>" % (first_ngram, first_ngram), 1)
-#     marks =re.findall(r'<VL Label=([^!=]+)>[^!=]+</VL>', exp_text)
+#     marks =re.findall(r'<VL Label=([^<>]+)>[^<>]+</VL>', exp_text)
 
     return (exp_text, key_ngrams)
 
@@ -203,9 +203,9 @@ def identify_variable (exp_text, fea_dict_dk, fea_dict_umls):
 def associate_variable_values(exp_text):
     # reorder exp_text to arrange variable values in order
     can_str = exp_text
-    can_str = re.sub(r'<VL ([^!=]+)>([^!=]+)</VL> <VML ([^!=]+)>([^!=]+)</VML> <VL ([^!=]+)>([^!=]+)</VL>', r'<VL \1>\2</VL> <VML \3>\4</VML>; <VL \5>\6</VL>', can_str) 
-    can_str = re.sub(r'<VML ([^!=]+)>([^!=]+)</VML> (-|to|and) <VML ([^!=]+)>([^!=]+)</VML>( of| for) <VL ([^!=]+)>([^!=]+)</VL>', r'<VL \7>\8</VL> <VML \1>\2</VML> \3 <VML \4>\5</VML>', can_str) 
-    can_str = re.sub(r'<VML ([^!=]+)>([^!=]+)</VML>( of| for) <VL ([^!=]+)>([^!=]+)</VL>', r'<VL \4>\5</VL> <VML \1>\2</VML>', can_str) 
+    can_str = re.sub(r'<VL ([^<>]+)>([^<>]+)</VL> <VML ([^<>]+)>([^<>]+)</VML> <VL ([^<>]+)>([^<>]+)</VL>', r'<VL \1>\2</VL> <VML \3>\4</VML>; <VL \5>\6</VL>', can_str) 
+    can_str = re.sub(r'<VML ([^<>]+)>([^<>]+)</VML> (-|to|and) <VML ([^<>]+)>([^<>]+)</VML>( of| for) <VL ([^<>]+)>([^<>]+)</VL>', r'<VL \7>\8</VL> <VML \1>\2</VML> \3 <VML \4>\5</VML>', can_str) 
+    can_str = re.sub(r'<VML ([^<>]+)>([^<>]+)</VML>( of| for) <VL ([^<>]+)>([^<>]+)</VL>', r'<VL \4>\5</VL> <VML \1>\2</VML>', can_str) 
     
     # find association    
     variables, vars_values = [], []
@@ -221,8 +221,8 @@ def associate_variable_values(exp_text):
             text = can_str[start:] # pos could be -1 so curr_str always ends with a space
             can_str = ''
         # get all values in the range
-        var =re.findall(r'<VL Label=([^!=]+) Source=([^!=]+)>([^!=]+)</VL>', text) # get last VL label as variable
-        values =re.findall(r'<VML Logic=([^!=]+) Unit=([^!=]*)>([^!=]+)</VML>', text)
+        var =re.findall(r'<VL Label=([^<>]+) Source=([^<>]+)>([^<>]+)</VL>', text) # get last VL label as variable
+        values =re.findall(r'<VML Logic=([^<>]+) Unit=([^<>]*)>([^<>]+)</VML>', text)
         if len(var) > 0 and len(values) > 0:
             variables.append(var[0][0])
             var_values = []
@@ -256,7 +256,7 @@ def context_validation (var_values, allow_units, error_units):
        
 #====================normalize the unit and their corresponding values
 def normalization (nor_unit, exps):
-#     for i in range(0,len(exps)):
+#     for i in xrange(len(exps)):
     exp_temp = []
     for exp in exps:
         if ' x ' in exp[2]: 
@@ -317,7 +317,7 @@ def hr_validation(exps_temp, min_value, max_value):
     # validation by comparing with average value step1. This has been tested to be not as valid as the previous validation method
 #     total, num = 0.0, 0.0
 #     for exp in exps_temp:
-#         if exp[3] != '':
+#         if exp[3] <> '':
 #            total += float(exp[2])
 #            num += 1
            

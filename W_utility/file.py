@@ -3,12 +3,15 @@
 # @author: rm3086 (at) columbia (dot) edu
 
 import csv, shutil, os, sys, glob
-import pickle as cPickle
+import _pickle as cPickle
 import struct
 platform_c_maxint = 2 ** (struct.Struct('i').size * 8 - 1) - 1
 csv.field_size_limit(platform_c_maxint)
-import logging as log
+from .log import strd_logger
 
+# logger
+global log
+log = strd_logger ('file')
 
 # check if a file exist
 def file_exist (fname):
