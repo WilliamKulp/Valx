@@ -1,3 +1,4 @@
+source_pattern,target_pattern,pattern_function
 (≥|>|≤|<|=|/|\\|\(|\)|\[|\]|\{|\}), \1 ,preprocessing
 -(\d+),- \1,preprocessing
 (--|- -| -|- |~~|~ ~|~), - ,preprocessing
