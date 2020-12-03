@@ -341,4 +341,3 @@ def hr_validation(exps_temp, min_value, max_value):
         
         tagg_temp.append(exp)
     return tagg_temp
-
