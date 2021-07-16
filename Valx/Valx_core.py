@@ -4,6 +4,7 @@
 # Please kindly cite the paper: Tianyong Hao, Hongfang Liu, Chunhua Weng. Valx: A system for extracting and structuring numeric lab test comparison statements from text. Methods of Information in Medicine. Vol. 55: Issue 3, pp. 266-275, 2016
 
 import re, math, csv
+import pdb
 try:
     from .W_utility.file import *
     from .NLP import sentence
@@ -31,7 +32,8 @@ def preprocessing (text):
     # text = text.decode('ascii', 'ignore')
 
     text = text.strip().replace('\n\n', '#')
-    text = text.replace ('\n', '')
+    text = text.replace ('\n\s+', '')
+    #text = re.sub("[^\n][\n].{1}\s+", ' ', text)
     text = text.replace(u'＝','=').replace(u'＞', '>').replace(u'＜','<').replace(u'≤','<=').replace (u'≥','>=').replace(u'≦','<=').replace(u'≧','>=').replace(u'mm³','mm^3').replace(u'µl','ul').replace(u'µL','ul').replace(u'·','').replace(u'‐','-').replace(u'—','-')
 
     text = text.replace('((', '(').replace('))', ')')
@@ -119,20 +121,24 @@ def extract_candidates_name (sections_num, candidates_num, name_list):
 
 #====identify expressions and formalize them into labels "<VML(tag) L(logic, e.g., greater_equal)=X U(unit)=X>value</VML>"
 def formalize_expressions (candidate):
+    #pdb.set_trace()
     text = candidate
     csvfile = open('Valx/data/rules.csv', 'r')
     reader = csv.reader(csvfile)
     now_pattern = "preprocessing"
-
+    
+    #pdb.set_trace()
     for i,pattern in enumerate(reader):
         source_pattern = pattern[0]
         target_pattern = pattern[1]
         pattern_function = pattern[2]
-
+        
+    #    pdb.set_trace()
         if(pattern_function == "process_numerical_values" and pattern_function != now_pattern):
             matchs = re.findall('<Unit>([^<>]+)</Unit>', text)
             for match in matchs: text = text.replace(match, match.replace(' / ', '/').replace(' - ','-'))
-
+        
+    #    pdb.set_trace()
         if(pattern_function == "process_special_logics" and pattern_function != now_pattern):
             # process 'select' expression, use the first one
             global selects
@@ -141,7 +147,7 @@ def formalize_expressions (candidate):
                 selec = selec.replace('X', '<VML Unit([^<>]+)>([^<>]+)</VML>')
                 if len(selec) > 0 : 
                     text = re.sub(selec, r'<VML Unit\1>\2</VML>', text) 
-
+    #        pdb.set_trace()
             #  process 'between' expressions
             global between
             betweens = between.split('|')
@@ -149,10 +155,15 @@ def formalize_expressions (candidate):
                 betw = betw.replace('X', '<VML Unit([^<>]+)>([^<>]+)</VML>')
                 if len(betw) > 0 :
                     text = re.sub(betw, r'<VML Logic=greater_equal Unit\1>\2</VML> - <VML Logic=lower_equal Unit\3>\4</VML>', text) #
+     #       pdb.set_trace()
+        #pdb.set_trace()
         text = re.sub(source_pattern, target_pattern, text)
         now_pattern = pattern_function
+        print(text)
+        print(pattern)
 
     csvfile.close()
+    #pdb.set_trace()
     return text
 
 
@@ -206,6 +217,7 @@ def identify_variable (exp_text, fea_dict_dk, fea_dict_umls):
 
 
 def associate_variable_values(exp_text):
+    #pdb.set_trace()
     # reorder exp_text to arrange variable values in order
     can_str = exp_text
     can_str = re.sub(r'<VL ([^<>]+)>([^<>]+)</VL> <VML ([^<>]+)>([^<>]+)</VML> <VL ([^<>]+)>([^<>]+)</VL>', r'<VL \1>\2</VL> <VML \3>\4</VML>; <VL \5>\6</VL>', can_str) 
@@ -235,7 +247,7 @@ def associate_variable_values(exp_text):
                 logic_for_view = value[0].replace('greater', '>').replace('lower', '<').replace('equal', '=').replace('_', '')
                 var_values.append([var[0][0], logic_for_view, value[2], value[1].strip()])
             vars_values.append(var_values)
-
+    #pdb.set_trace()
     return (variables, vars_values)
 
 
