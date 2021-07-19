@@ -1,21 +1,7 @@
 0,1,2,3,4
-NCT04488419,Inclusion,age 55 to 85 years,<VL Label=Age Source=DK>age</VL> <VML Logic=greater_equal Unit=years>55</VML> - <VML Logic=lower_equal Unit=years>85</VML>,"[['Age', '>=', 55.0, 'years'], ['Age', '<=', 85.0, 'years']]"
-NCT04488419,Inclusion,"mild-to-moderate ad dementia subjects, mmse 14-24, cdr 1 or 2 at screening","mild-to-moderate ad dementia subjects, <VL Label=MMSE Source=DK>mmse</VL> <VML Logic=greater_equal Unit=>14</VML> - <VML Logic=lower_equal Unit=>24</VML> , <VL Label=cdr Source=DK>cdr</VL> <VML Logic=equal Unit=>1</VML> or <VML Logic=equal Unit=>2</VML> at screening","[['MMSE', '>=', 14.0, ''], ['MMSE', '<=', 24.0, ''], ['cdr', '=', 1.0, ''], ['cdr', '=', 2.0, '']]"
-NCT04488419,Inclusion,"subjects are on a stable, approved dose of an achei (except for donepezil at 23 
- mg po) for at least 3 months before screening or","subjects are on a stable, <VL Label=approved dose of an achei Source=ngram>approved dose of an achei</VL> ( except for donepezil at <VML Logic=equal Unit=
- mg>23</VML> po ) for <VML Logic=greater_equal Unit=months>3</VML> before screening or","[['approved dose of an achei', '=', '23', 'mg'], ['approved dose of an achei', '>=', '3', 'months']]"
-NCT04488419,Inclusion,"subjects who received an achei in the past and discontinued 4 weeks prior to
- screening","<VL Label=subjects who received an achei in the past and discontinued Source=ngram>subjects who received an achei in the past and discontinued</VL> <VML Logic=equal Unit=weeks>4</VML> prior to
- screening","[['subjects who received an achei in the past and discontinued', '=', '4', 'weeks']]"
-NCT04488419,Exclusion,history within 2 years of screening or current diagnosis of psychosis,history <VML Logic=lower Unit=years>2</VML> of screening or current diagnosis of <VL Label=psychosis Source=UMLS>psychosis</VL>,"[['psychosis', '<', '2', 'years']]"
-NCT04488419,Exclusion,myocardial infarction or unstable angina within the last 6 months,<VL Label=Myocardial infarction Source=DK>myocardial infarction</VL> or unstable angina <VML Logic=lower Unit=last months>6</VML>,"[['Myocardial infarction', '<', 6.0, 'last months']]"
-NCT04488419,Exclusion,renal insufficiency (serum creatinine > 2.0 mg/dl),renal insufficiency ( <VL Label=Creatinine Source=DK>serum creatinine</VL> <VML Logic=greater Unit=mg/dl>2.0</VML> ) ,"[['Creatinine', '>', 2.0, 'mg/dl']]"
-NCT04488419,Exclusion,"hepatic impairment with alanine aminotransferase or aspartate aminotransferase > 2
- times the upper limit of normal or child-pugh class b and c","hepatic impairment with alanine aminotransferase or <VL Label=AST Source=DK>aspartate aminotransferase</VL> <VML Logic=greater Unit=
- times>2</VML> the upper limit of normal or child-pugh class b and c","[['AST', '>', 2.0, 'times']]"
-NCT04488419,Exclusion,donepezil at 23 mg po,<VL Label=donepezil Source=ngram>donepezil</VL> at <VML Logic=equal Unit=mg>23</VML> po,"[['donepezil', '=', '23', 'mg']]"
-NCT04488419,Exclusion,"the subject has received active amyloid or tau immunization (i.e., vaccination for
- alzheimer's disease) at any time or passive immunization (i.e., monoclonal antibodies
- for alzheimer's disease) within 6 months of screening","the subject has received active amyloid or tau immunization ( i.e., vaccination for
- alzheimer's disease ) at any time or passive immunization ( i.e., monoclonal antibodies
- for alzheimer's disease ) <VML Logic=lower Unit=months>6</VML> of <VL Label=screening Source=ngram>screening</VL>","[['screening', '<', '6', 'months']]"
+NCT03976349,Exclusion,"key exclusion criteria:
+ 
+ - montreal cognitive assessment (moca) score less than (<) 23, dementia or other significant cognitive impairment that, in the opinion of the investigator, would interfere with study evaluation","key exclusion criteria:
+ 
+ - montreal cognitive assessment ( moca ) score less than <VML Logic=lower Unit=>23</VML> , <VL Label=dementia or other significant cognitive impairment Source=ngram>dementia or other significant cognitive impairment</VL> that, in the opinion of the investigator, would interfere with study evaluation","[['dementia or other significant cognitive impairment', '<', '23', '']]"
+NCT03976349,Exclusion,"poorly controlled diabetes mellitus, as defined by having dosage adjustment of diabetic medication within 3 months before dosing (day 1) or glycosylated hemoglobin value greater than or equal to (>=) 8 percent (%) at screening.","poorly controlled diabetes mellitus, as defined by having <VL Label=Dosage Source=DK>dosage</VL> adjustment of diabetic medication <VML Logic=lower Unit=months>3</VML> before dosing ( <VML Logic=equal Unit=day>1</VML> ) or <VL Label=HBA1C Source=DK>glycosylated hemoglobin value</VL> <VML Logic=greater_equal Unit=percent>8</VML> ( % ) at screening.","[['HBA1C', '>=', 8.0, '%']]"
