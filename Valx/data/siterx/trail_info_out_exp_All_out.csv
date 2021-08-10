@@ -1,0 +1,7 @@
+0,1,2,3,4
+NCT03976349,Exclusion,"key exclusion criteria:
+ 
+ - montreal cognitive assessment (moca) score less than (<) 23, dementia or other significant cognitive impairment that, in the opinion of the investigator, would interfere with study evaluation","key exclusion criteria:
+ 
+ - montreal cognitive assessment ( moca ) score less than <VML Logic=lower Unit=>23</VML> , <VL Label=dementia or other significant cognitive impairment Source=ngram>dementia or other significant cognitive impairment</VL> that, in the opinion of the investigator, would interfere with study evaluation","[['dementia or other significant cognitive impairment', '<', '23', '']]"
+NCT03976349,Exclusion,"poorly controlled diabetes mellitus, as defined by having dosage adjustment of diabetic medication within 3 months before dosing (day 1) or glycosylated hemoglobin value greater than or equal to (>=) 8 percent (%) at screening.","poorly controlled diabetes mellitus, as defined by having <VL Label=Dosage Source=DK>dosage</VL> adjustment of diabetic medication <VML Logic=lower Unit=months>3</VML> before dosing ( <VML Logic=equal Unit=day>1</VML> ) or <VL Label=HBA1C Source=DK>glycosylated hemoglobin value</VL> <VML Logic=greater_equal Unit=percent>8</VML> ( % ) at screening.","[['HBA1C', '>=', 8.0, '%']]"
